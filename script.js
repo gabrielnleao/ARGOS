@@ -1,12 +1,6 @@
 // -------------------------
 // Dados de incidentes
 // -------------------------
-// Cada incidente tem:
-// - title
-// - type  (tipo textual)
-// - pos   (lat/lng)
-// - icon  (arquivo de imagem na raiz)
-// - cameraUrl (vídeo/stream específico, se quiser)
 const INCIDENTS_DATA = [
   {
     id: 1,
@@ -130,6 +124,18 @@ function getNearestVehicles(pos, count = 3) {
   return withDistance.slice(0, count);
 }
 
+// Limpa rota e animação de uma viatura específica
+function clearVehicleRoute(vehicle) {
+  if (vehicle.routePolyline) {
+    vehicle.routePolyline.setMap(null);
+    vehicle.routePolyline = null;
+  }
+  if (vehicle.routeAnimation) {
+    clearInterval(vehicle.routeAnimation);
+    vehicle.routeAnimation = null;
+  }
+}
+
 // -------------------------
 // Inicialização do mapa
 // -------------------------
@@ -148,7 +154,6 @@ function initMap() {
 
   buildIncidents();
   buildVehicles();
-  setupControls();
   setupModalEvents();
 }
 
@@ -245,6 +250,7 @@ function buildVehicles() {
       pos: vb.pos,
       marker,
       routePolyline: null,
+      routeAnimation: null,
     });
   });
 }
@@ -274,7 +280,7 @@ function selectIncident(id) {
 }
 
 // -------------------------
-// Focar viatura (caso clique)
+// Focar viatura (caso clique na lista, se um dia reexibir)
 // -------------------------
 function focusVehicle(id) {
   const v = vehicles.find((veh) => veh.id === id);
@@ -284,68 +290,58 @@ function focusVehicle(id) {
 }
 
 // -------------------------
-// Controles (Despachar / Resetar)
+// Despacho de viatura (via popup)
 // -------------------------
-function setupControls() {
-  const dispatchBtn = document.getElementById("dispatchBtn");
-  const resetBtn = document.getElementById("resetBtn");
+function dispatchVehicleToIncident(vehicleId, incidentId) {
+  const veh = vehicles.find((v) => v.id === vehicleId);
+  const incident = incidents.find((i) => i.id === incidentId);
+  if (!veh || !incident) return;
 
-  dispatchBtn.addEventListener("click", dispatchVehicles);
-  resetBtn.addEventListener("click", resetRoutes);
-}
+  // Limpa rota/animação anterior da viatura
+  clearVehicleRoute(veh);
 
-function dispatchVehicles() {
-  if (!selectedIncident) {
-    alert("Selecione um incidente na lista antes de despachar.");
-    return;
-  }
+  const request = {
+    origin: veh.pos,
+    destination: incident.pos,
+    travelMode: google.maps.TravelMode.DRIVING,
+  };
 
-  const select = document.getElementById("selectCount");
-  const count = parseInt(select.value, 10) || 1;
+  directionsService.route(request, (result, status) => {
+    if (status === google.maps.DirectionsStatus.OK) {
+      const path = result.routes[0].overview_path;
 
-  // Limpa rotas anteriores
-  resetRoutes(false);
+      // Desenha a rota
+      const polyline = new google.maps.Polyline({
+        path,
+        map,
+        strokeColor: "#4c8dff",
+        strokeOpacity: 0.9,
+        strokeWeight: 5,
+      });
 
-  // Pega as N primeiras viaturas (poderia ser as mais próximas também)
-  const toDispatch = vehicles.slice(0, count);
+      veh.routePolyline = polyline;
 
-  toDispatch.forEach((veh) => {
-    const request = {
-      origin: veh.pos,
-      destination: selectedIncident.pos,
-      travelMode: google.maps.TravelMode.DRIVING,
-    };
+      // Anima a viatura ao longo do path
+      let step = 0;
+      const totalSteps = path.length;
 
-    directionsService.route(request, (result, status) => {
-      if (status === google.maps.DirectionsStatus.OK) {
-        const path = result.routes[0].overview_path;
+      veh.routeAnimation = setInterval(() => {
+        if (step >= totalSteps) {
+          clearInterval(veh.routeAnimation);
+          veh.routeAnimation = null;
+          return;
+        }
 
-        const polyline = new google.maps.Polyline({
-          path,
-          map,
-          strokeColor: "#4c8dff",
-          strokeOpacity: 0.9,
-          strokeWeight: 5,
-        });
+        const point = path[step];
+        veh.marker.setPosition(point);
+        veh.pos = { lat: point.lat(), lng: point.lng() };
 
-        veh.routePolyline = polyline;
-      } else {
-        console.error("Erro ao calcular rota:", status);
-      }
-    });
-  });
-}
-
-function resetRoutes(showAlert = true) {
-  vehicles.forEach((veh) => {
-    if (veh.routePolyline) {
-      veh.routePolyline.setMap(null);
-      veh.routePolyline = null;
+        step++;
+      }, 80); // velocidade da animação (ms por ponto)
+    } else {
+      console.error("Erro ao calcular rota:", status);
     }
   });
-  if (showAlert) {
-    console.log("Rotas resetadas.");
-  }
 }
 
 // -------------------------
@@ -397,7 +393,7 @@ function openIncidentModal(incident) {
       });
   }
 
-  // 3 viaturas mais próximas
+  // 3 viaturas mais próximas + botão de despachar
   if (modalVehiclesListEl) {
     modalVehiclesListEl.innerHTML = "";
     const nearest = getNearestVehicles(incident.pos, 3);
@@ -406,6 +402,15 @@ function openIncidentModal(incident) {
       li.innerHTML = `<strong>${v.name}</strong><span>${formatDistance(
         v.distance
       )} até o incidente</span>`;
+
+      const btn = document.createElement("button");
+      btn.textContent = "Despachar";
+      btn.className = "modal-vehicle-btn";
+      btn.addEventListener("click", () =>
+        dispatchVehicleToIncident(v.id, incident.id)
+      );
+
+      li.appendChild(btn);
       modalVehiclesListEl.appendChild(li);
     });
   }

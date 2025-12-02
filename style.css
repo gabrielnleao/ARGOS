@@ -78,6 +78,7 @@ body {
   color: #9ea8d6;
 }
 
+/* (antigos) controles laterais – não usados, mas mantidos se precisar depois */
 .controls {
   display: flex;
   flex-direction: column;
@@ -262,10 +263,33 @@ body {
   padding: 6px 8px;
   margin-bottom: 6px;
   font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 #modalVehiclesList li span {
-  display: block;
   font-size: 11px;
   color: #9ea8d6;
+}
+
+/* Botão de despachar dentro do popup */
+.modal-vehicle-btn {
+  align-self: flex-start;
+  margin-top: 4px;
+  border-radius: 999px;
+  border: none;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: linear-gradient(135deg, #37b26c, #1d9b57);
+  color: #ffffff;
+  transition: background 0.15s ease, transform 0.1s ease,
+    box-shadow 0.15s ease;
+}
+
+.modal-vehicle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 }

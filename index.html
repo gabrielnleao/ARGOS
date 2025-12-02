@@ -472,19 +472,7 @@
 
         <div id="incidentsList" class="list"></div>
 
-        <div class="controls">
-          <label>Viaturas a despachar:</label>
-          <select id="selectCount">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3" selected>3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
-
-          <button id="dispatchBtn">Despachar</button>
-          <button id="resetBtn" class="secondary">Resetar</button>
-        </div>
+        <!-- Controles laterais REMOVIDOS: despacho será só no popup -->
 
         <h2 id="vehiclesTitle">Viaturas (sempre visíveis)</h2>
         <div id="vehiclesList" class="list small"></div>
@@ -550,7 +538,7 @@
   <script
     async
     defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxeJ_-Jb3T3oB1_tyrWvbFxcNyLuDkjy4&libraries=geometry&callback=initMap"
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=geometry&callback=initMap"
   ></script>
 
   <!-- Lógica de navegação + login -->
