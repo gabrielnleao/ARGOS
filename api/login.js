@@ -1,27 +1,62 @@
-module.exports = (req, res) => {
-  // Só aceita POST
+// api/login.js
+const { Pool } = require("pg");
+
+// Pool reutilizável entre chamadas (bom para serverless)
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false, // necessário para Supabase
+  },
+});
+
+module.exports = async (req, res) => {
   if (req.method !== "POST") {
-    res.status(405).json({ error: "Method not allowed" });
-    return;
+    res.setHeader("Allow", ["POST"]);
+    return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { email, password } = req.body || {};
+  try {
+    const { email, password } = req.body || {};
 
-  // Conta fixa (pode virar variável de ambiente na Vercel)
-  const FIXED_EMAIL = process.env.FIXED_USER_EMAIL || "op@argos.com";
-  const FIXED_PASSWORD = process.env.FIXED_USER_PASSWORD || "123456";
-  const FIXED_NAME = process.env.FIXED_USER_NAME || "Operador ARGOS";
+    if (!email || !password) {
+      return res
+        .status(400)
+        .json({ error: "Email e senha são obrigatórios." });
+    }
 
-  if (email === FIXED_EMAIL && password === FIXED_PASSWORD) {
+    // Ajuste o nome da tabela/colunas se for diferente
+    const query = `
+      SELECT id, name, email, password
+      FROM users
+      WHERE email = $1
+      LIMIT 1
+    `;
+
+    const { rows } = await pool.query(query, [email]);
+    const user = rows[0];
+
+    if (!user) {
+      return res.status(401).json({ error: "Credenciais inválidas." });
+    }
+
+    // Comparação simples de senha (sem hash, só para protótipo)
+    if (user.password !== password) {
+      return res.status(401).json({ error: "Credenciais inválidas." });
+    }
+
+    // Aqui você poderia gerar um JWT real
     const token = "token-simples-exemplo";
-    res.status(200).json({
+
+    return res.status(200).json({
       token,
       user: {
-        name: FIXED_NAME,
-        email: FIXED_EMAIL,
+        id: user.id,
+        name: user.name || "Operador ARGOS",
+        email: user.email,
       },
     });
-  } else {
-    res.status(401).json({ error: "Credenciais inválidas" });
+  } catch (err) {
+    console.error("Erro no /api/login:", err);
+    return res.status(500).json({ error: "Erro interno no servidor." });
   }
 };
