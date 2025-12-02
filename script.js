@@ -354,12 +354,14 @@ function dispatchSelectedCountForCurrentIncident() {
   const toDispatch = modalNearestVehicles.slice(0, count);
 
   toDispatch.forEach((vehWrapper) => {
-    // vehWrapper tem as mesmas chaves de vehicle (id, name, pos, marker, etc.)
     const vehicle = vehicles.find((v) => v.id === vehWrapper.id);
     if (vehicle) {
       dispatchVehicleToIncident(vehicle, selectedIncident);
     }
   });
+
+  // <<< AQUI É A MUDANÇA: fecha o popup depois de despachar >>>
+  closeIncidentModal();
 }
 
 // -------------------------
