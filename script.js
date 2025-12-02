@@ -4,45 +4,46 @@
 const INCIDENTS_DATA = [
   {
     id: 1,
-    title: "Acidente na Av. Agamenon",
-    type: "Acidente de trânsito",
+    title: "Indivíduo com objeto suspeito em beco",
+    type: "Ocorrência preventiva - Polícia Militar",
     pos: { lat: -8.0505, lng: -34.8925 },
-    icon: "inc_acidente.png",
-    cameraUrl: "video.mp4",
+    icon: "inc_beco_pm.png",          // ícone que você criar p/ esse tipo
+    cameraUrl: "vid_beco_crowbar.mp4" // Man Standing in a Dark Alleyway Holding a Crowbar
   },
   {
     id: 2,
-    title: "Incêndio em prédio residencial",
-    type: "Incêndio urbano",
+    title: "Briga em via pública em área residencial",
+    type: "Conflito em via pública - Polícia Militar",
     pos: { lat: -8.045, lng: -34.885 },
-    icon: "inc_incendio.png",
-    cameraUrl: "video.mp4",
+    icon: "inc_briga_pm.png",
+    cameraUrl: "vid_briga_residencial.mp4" // Two Boys Fighting on the Ground
   },
   {
     id: 3,
-    title: "Ocorrência de assalto",
-    type: "Ocorrência policial",
+    title: "Planejamento de roubo em imóvel comercial",
+    type: "Investigação de crime organizado - Polícia Civil",
     pos: { lat: -8.06, lng: -34.89 },
-    icon: "inc_assalto.png",
-    cameraUrl: "video.mp4",
+    icon: "inc_planejamento_pc.png",
+    cameraUrl: "vid_planejamento_roubo.mp4" // Robbers Looking at a Map while Planning their Next Robber
   },
   {
     id: 4,
-    title: "Congestionamento intenso",
-    type: "Trânsito / congestionamento",
+    title: "Discussão de casal em via pública",
+    type: "Possível violência doméstica - PM / Polícia Civil",
     pos: { lat: -8.0435, lng: -34.878 },
-    icon: "inc_congestionamento.png",
-    cameraUrl: "video.mp4",
+    icon: "inc_discussao_pc_pm.png",
+    cameraUrl: "vid_discussao_rua.mp4" // Couple Arguing in the Street
   },
   {
     id: 5,
-    title: "Resgate e apoio médico",
-    type: "Atendimento pré-hospitalar",
+    title: "Indivíduo em atitude suspeita em rua pouco movimentada",
+    type: "Atitude suspeita - Polícia Militar",
     pos: { lat: -8.055, lng: -34.9 },
-    icon: "inc_resgate.png",
-    cameraUrl: "video.mp4",
-  },
+    icon: "inc_suspeito_pm.png",
+    cameraUrl: "vid_suspeito_andando_noite.mp4" // Man Walking in the Dark ou Hoodie Walking
+  }
 ];
+
 
 // -------------------------
 // Bases de viaturas
