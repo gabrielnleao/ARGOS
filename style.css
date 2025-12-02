@@ -132,7 +132,7 @@ body {
   background: #222a44;
 }
 
-/* main com mapa + câmera */
+/* main com mapa + (antigo) painel de câmera */
 #main {
   flex: 1;
   position: relative;
@@ -144,7 +144,6 @@ body {
   flex: 1;
 }
 
-/* painel de câmera – vai ficar oculto */
 .camera {
   position: absolute;
   bottom: 24px;
@@ -172,7 +171,101 @@ body {
   display: none;
 }
 
-/* 2) Esconder o quadrado da câmera */
+/* 2) Esconder o quadrado da câmera antigo */
 #cameraPanel {
   display: none;
+}
+
+/* 3) Modal de incidente (overlay) */
+.incident-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.incident-modal-overlay.open {
+  display: flex;
+}
+
+.incident-modal-card {
+  background: #050814;
+  color: #e5ecff;
+  border-radius: 18px;
+  padding: 18px 18px 20px;
+  width: 860px;
+  max-width: calc(100% - 32px);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.incident-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  border: none;
+  background: transparent;
+  color: #9ea8d6;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.incident-modal-card h3 {
+  margin: 0 32px 4px 0;
+  font-size: 18px;
+}
+
+.modal-subtitle {
+  margin: 0 32px 4px 0;
+  font-size: 13px;
+  color: #9ea8d6;
+}
+
+.incident-modal-body {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 14px;
+}
+
+.incident-modal-video {
+  background: #101728;
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 220px;
+}
+
+.incident-modal-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.incident-modal-info h4 {
+  margin: 0 0 8px 0;
+  font-size: 15px;
+}
+
+#modalVehiclesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#modalVehiclesList li {
+  background: #121729;
+  border-radius: 10px;
+  padding: 6px 8px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+#modalVehiclesList li span {
+  display: block;
+  font-size: 11px;
+  color: #9ea8d6;
 }

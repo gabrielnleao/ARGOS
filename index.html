@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ARGOS – Protótipo com Login</title>
 
-  <!-- Bootstrap (para landing + login) -->
+  <!-- Bootstrap -->
   <link
     href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
     rel="stylesheet"
@@ -493,7 +493,7 @@
       <main id="main">
         <div id="map"></div>
 
-        <!-- Painel de câmera (escondido via CSS, só deixei a marcação) -->
+        <!-- Painel de câmera antigo (continuamos escondendo via CSS) -->
         <div id="cameraPanel" class="camera">
           <video
             id="camPreview"
@@ -504,6 +504,39 @@
           ></video>
         </div>
       </main>
+    </div>
+  </div>
+
+  <!-- MODAL DO INCIDENTE -->
+  <div id="incidentModal" class="incident-modal-overlay">
+    <div class="incident-modal-card">
+      <button
+        id="incidentModalClose"
+        class="incident-modal-close"
+        aria-label="Fechar"
+      >
+        ×
+      </button>
+
+      <h3 id="modalIncidentTitle"></h3>
+      <p id="modalIncidentType" class="modal-subtitle"></p>
+      <p id="modalIncidentLocation" class="modal-subtitle"></p>
+
+      <div class="incident-modal-body">
+        <div class="incident-modal-video">
+          <video
+            id="modalCam"
+            src="video.mp4"
+            autoplay
+            muted
+            loop
+          ></video>
+        </div>
+        <div class="incident-modal-info">
+          <h4>Viaturas mais próximas</h4>
+          <ul id="modalVehiclesList"></ul>
+        </div>
+      </div>
     </div>
   </div>
 

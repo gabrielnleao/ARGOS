@@ -1,37 +1,52 @@
 // -------------------------
 // Dados de incidentes
 // -------------------------
-// Cada incidente tem seu próprio arquivo de ícone (na raiz do projeto)
+// Cada incidente tem:
+// - title
+// - type  (tipo textual)
+// - pos   (lat/lng)
+// - icon  (arquivo de imagem na raiz)
+// - cameraUrl (vídeo/stream específico, se quiser)
 const INCIDENTS_DATA = [
   {
     id: 1,
     title: "Acidente na Av. Agamenon",
+    type: "Acidente de trânsito",
     pos: { lat: -8.0505, lng: -34.8925 },
     icon: "inc_acidente.png",
+    cameraUrl: "video.mp4",
   },
   {
     id: 2,
     title: "Incêndio em prédio residencial",
+    type: "Incêndio urbano",
     pos: { lat: -8.045, lng: -34.885 },
     icon: "inc_incendio.png",
+    cameraUrl: "video.mp4",
   },
   {
     id: 3,
     title: "Ocorrência de assalto",
+    type: "Ocorrência policial",
     pos: { lat: -8.06, lng: -34.89 },
     icon: "inc_assalto.png",
+    cameraUrl: "video.mp4",
   },
   {
     id: 4,
     title: "Congestionamento intenso",
+    type: "Trânsito / congestionamento",
     pos: { lat: -8.0435, lng: -34.878 },
     icon: "inc_congestionamento.png",
+    cameraUrl: "video.mp4",
   },
   {
     id: 5,
     title: "Resgate e apoio médico",
+    type: "Atendimento pré-hospitalar",
     pos: { lat: -8.055, lng: -34.9 },
     icon: "inc_resgate.png",
+    cameraUrl: "video.mp4",
   },
 ];
 
@@ -75,11 +90,51 @@ let incidents = [];
 let vehicles = [];
 let selectedIncident = null;
 
+// Referências do modal
+const incidentModalEl = document.getElementById("incidentModal");
+const incidentModalCloseBtn = document.getElementById("incidentModalClose");
+const modalIncidentTitleEl = document.getElementById("modalIncidentTitle");
+const modalIncidentTypeEl = document.getElementById("modalIncidentType");
+const modalIncidentLocationEl = document.getElementById(
+  "modalIncidentLocation"
+);
+const modalVehiclesListEl = document.getElementById("modalVehiclesList");
+const modalCamEl = document.getElementById("modalCam");
+
+// -------------------------
+// Helpers
+// -------------------------
+function formatDistance(meters) {
+  if (!meters && meters !== 0) return "";
+  if (meters < 1000) {
+    return `${Math.round(meters)} m`;
+  }
+  const km = meters / 1000;
+  return `${km.toFixed(1)} km`;
+}
+
+// Retorna as N viaturas mais próximas de uma posição
+function getNearestVehicles(pos, count = 3) {
+  const incidentLatLng = new google.maps.LatLng(pos.lat, pos.lng);
+
+  const withDistance = vehicles.map((v) => {
+    const vehLatLng = new google.maps.LatLng(v.pos.lat, v.pos.lng);
+    const dist = google.maps.geometry.spherical.computeDistanceBetween(
+      vehLatLng,
+      incidentLatLng
+    );
+    return { ...v, distance: dist };
+  });
+
+  withDistance.sort((a, b) => a.distance - b.distance);
+  return withDistance.slice(0, count);
+}
+
 // -------------------------
 // Inicialização do mapa
 // -------------------------
 function initMap() {
-  const center = { lat: -8.05, lng: -34.89 }; // região central da maquete
+  const center = { lat: -8.05, lng: -34.89 };
 
   map = new google.maps.Map(document.getElementById("map"), {
     zoom: 14,
@@ -94,6 +149,7 @@ function initMap() {
   buildIncidents();
   buildVehicles();
   setupControls();
+  setupModalEvents();
 }
 
 // -------------------------
@@ -133,11 +189,15 @@ function buildIncidents() {
       icon: incidentIcon,
     });
 
+    marker.addListener("click", () => selectIncident(it.id));
+
     incidents.push({
       id: it.id,
       title: it.title,
+      type: it.type,
       pos: it.pos,
       marker,
+      cameraUrl: it.cameraUrl,
       selected: false,
       polylines: [],
     });
@@ -208,6 +268,9 @@ function selectIncident(id) {
   // Centraliza mapa no incidente selecionado
   map.panTo(selectedIncident.pos);
   map.setZoom(15);
+
+  // Abre popup com câmera + informações
+  openIncidentModal(selectedIncident);
 }
 
 // -------------------------
@@ -243,7 +306,7 @@ function dispatchVehicles() {
   // Limpa rotas anteriores
   resetRoutes(false);
 
-  // Pega as N primeiras viaturas
+  // Pega as N primeiras viaturas (poderia ser as mais próximas também)
   const toDispatch = vehicles.slice(0, count);
 
   toDispatch.forEach((veh) => {
@@ -281,10 +344,81 @@ function resetRoutes(showAlert = true) {
     }
   });
   if (showAlert) {
-    // opcional: feedback visual simples
     console.log("Rotas resetadas.");
   }
 }
 
-// Torna initMap visível para o callback do Google Maps
+// -------------------------
+// Modal do incidente
+// -------------------------
+function setupModalEvents() {
+  if (incidentModalCloseBtn) {
+    incidentModalCloseBtn.addEventListener("click", () =>
+      closeIncidentModal()
+    );
+  }
+
+  if (incidentModalEl) {
+    // Fechar ao clicar fora do card
+    incidentModalEl.addEventListener("click", (e) => {
+      if (e.target === incidentModalEl) {
+        closeIncidentModal();
+      }
+    });
+  }
+}
+
+function openIncidentModal(incident) {
+  if (!incidentModalEl) return;
+
+  if (modalIncidentTitleEl) {
+    modalIncidentTitleEl.textContent = incident.title;
+  }
+
+  if (modalIncidentTypeEl) {
+    modalIncidentTypeEl.textContent = incident.type
+      ? `Tipo: ${incident.type}`
+      : "";
+  }
+
+  if (modalIncidentLocationEl) {
+    modalIncidentLocationEl.textContent = `Localização aproximada: ${incident.pos.lat.toFixed(
+      4
+    )}, ${incident.pos.lng.toFixed(4)}`;
+  }
+
+  // Camera
+  if (modalCamEl) {
+    modalCamEl.src = incident.cameraUrl || "video.mp4";
+    modalCamEl
+      .play()
+      .catch(() => {
+        /* ignore */
+      });
+  }
+
+  // 3 viaturas mais próximas
+  if (modalVehiclesListEl) {
+    modalVehiclesListEl.innerHTML = "";
+    const nearest = getNearestVehicles(incident.pos, 3);
+    nearest.forEach((v) => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>${v.name}</strong><span>${formatDistance(
+        v.distance
+      )} até o incidente</span>`;
+      modalVehiclesListEl.appendChild(li);
+    });
+  }
+
+  incidentModalEl.classList.add("open");
+}
+
+function closeIncidentModal() {
+  if (!incidentModalEl) return;
+  incidentModalEl.classList.remove("open");
+}
+
+// -------------------------
+// Expor initMap para o Google Maps
+// -------------------------
 window.initMap = initMap;
