@@ -1,13 +1,21 @@
 {
-  "name": "argos-vercel",
+  "name": "backend",
   "version": "1.0.0",
-  "private": true,
+  "description": "",
+  "main": "backend/server.js",
   "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend/server.js",
     "dev": "vercel dev",
-    "build": "echo \"No build step\"",
-    "start": "echo \"Use vercel dev para rodar localmente\""
+    "build": "echo \"No build step\""
   },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
   "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.2.1",
     "pg": "^8.12.0"
   }
 }
