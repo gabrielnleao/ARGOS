@@ -1,517 +1,630 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARGOS – Protótipo com Login</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARGOS – Protótipo com Login</title>
 
-    <!-- Bootstrap (para o layout da tela de login/home pública) -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap (para landing + login) -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
 
-    <!-- Estilos originais da landing / login -->
-    <style>
-        :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --accent-color: #e74c3c;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        .page {
-            display: none;
-        }
-        
-        .page.active {
-            display: block;
-        }
-        
-        .navbar {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .carousel-item {
-            height: 500px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .carousel-item:nth-child(2) {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-        
-        .carousel-item:nth-child(3) {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-        
-        .carousel-caption {
-            background: rgba(0,0,0,0.5);
-            padding: 30px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .info-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: none;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-        
-        .info-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        .info-card .card-header {
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-            color: white;
-            font-weight: bold;
-            padding: 20px;
-        }
-        
-        .section-title {
-            color: var(--primary-color);
-            font-weight: bold;
-            margin-bottom: 30px;
-            position: relative;
-            padding-bottom: 15px;
-        }
-        
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: var(--secondary-color);
-            border-radius: 2px;
-        }
-        
-        .stat-box {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        
-        .stat-number {
-            font-size: 3rem;
-            font-weight: bold;
-        }
-        
-        footer {
-            background: var(--primary-color);
-            color: white;
-            padding: 30px 0;
-            margin-top: 50px;
-        }
-        
-        /* Login Styles */
-        .auth-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-        }
-        
-        .auth-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-            max-width: 450px;
-            width: 100%;
-            animation: slideIn 0.5s ease;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .auth-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 40px 30px;
-            text-align: center;
-        }
-        
-        .auth-header h2 {
-            margin: 0;
-            font-weight: bold;
-        }
-        
-        .auth-body {
-            padding: 40px 30px;
-        }
-        
-        .form-control:focus {
-            border-color: var(--secondary-color);
-            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-        }
-        
-        .btn-auth {
-            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
-            border: none;
-            padding: 12px;
-            font-weight: bold;
-            transition: transform 0.2s;
-        }
-        
-        .btn-auth:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .auth-link {
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .auth-link:hover {
-            text-decoration: underline;
-        }
-        
-        .divider {
-            display: flex;
-            align-items: center;
-            text-align: center;
-            margin: 20px 0;
-        }
-        
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        .divider span {
-            padding: 0 10px;
-            color: #999;
-            font-size: 0.9rem;
-        }
-        
-        .alert-custom {
-            border-radius: 10px;
-            border: none;
-        }
+  <!-- Estilos da landing + login -->
+  <style>
+    :root {
+      --primary-color: #2c3e50;
+      --secondary-color: #3498db;
+      --accent-color: #e74c3c;
+    }
 
-        /* Header do painel ARGOS + botão Sair */
-        .sidebar-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
 
-        #logoutBtn {
-            border-radius: 999px;
-            padding: 6px 14px;
-            border: 1px solid rgba(255, 107, 107, 0.5);
-            background: transparent;
-            color: #ff6b6b;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
-        }
+    .page {
+      display: none;
+    }
 
-        #logoutBtn:hover {
-            background: rgba(255, 107, 107, 0.12);
-            box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.6);
-            transform: translateY(-1px);
-        }
-    </style>
+    .page.active {
+      display: block;
+    }
 
-    <!-- CSS do protótipo ARGOS (mapa, sidebar, etc.) -->
-    <link rel="stylesheet" href="style.css">
+    .navbar {
+      background: linear-gradient(
+        135deg,
+        var(--primary-color),
+        var(--secondary-color)
+      );
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .carousel-item {
+      height: 500px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .carousel-item:nth-child(2) {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    .carousel-item:nth-child(3) {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .carousel-caption {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 30px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .info-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: none;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+
+    .info-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .info-card .card-header {
+      background: linear-gradient(
+        135deg,
+        var(--secondary-color),
+        var(--primary-color)
+      );
+      color: white;
+      font-weight: bold;
+      padding: 20px;
+    }
+
+    .section-title {
+      color: var(--primary-color);
+      font-weight: bold;
+      margin-bottom: 30px;
+      position: relative;
+      padding-bottom: 15px;
+    }
+
+    .section-title::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: var(--secondary-color);
+      border-radius: 2px;
+    }
+
+    footer {
+      background: var(--primary-color);
+      color: white;
+      padding: 30px 0;
+      margin-top: 50px;
+    }
+
+    /* Login */
+    .auth-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+      max-width: 450px;
+      width: 100%;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .auth-header {
+      background: linear-gradient(
+        135deg,
+        var(--primary-color),
+        var(--secondary-color)
+      );
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+    }
+
+    .auth-header h2 {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .auth-body {
+      padding: 40px 30px;
+    }
+
+    .form-control:focus {
+      border-color: var(--secondary-color);
+      box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+    }
+
+    .btn-auth {
+      background: linear-gradient(
+        135deg,
+        var(--secondary-color),
+        var(--primary-color)
+      );
+      border: none;
+      padding: 12px;
+      font-weight: bold;
+      transition: transform 0.2s;
+    }
+
+    .btn-auth:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .auth-link {
+      color: var(--secondary-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .auth-link:hover {
+      text-decoration: underline;
+    }
+
+    .alert-custom {
+      border-radius: 10px;
+      border: none;
+    }
+
+    /* Header do painel ARGOS + botão Sair */
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    #logoutBtn {
+      border-radius: 999px;
+      padding: 6px 14px;
+      border: 1px solid rgba(255, 107, 107, 0.5);
+      background: transparent;
+      color: #ff6b6b;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, box-shadow 0.2s ease,
+        transform 0.1s ease;
+    }
+
+    #logoutBtn:hover {
+      background: rgba(255, 107, 107, 0.12);
+      box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.6);
+      transform: translateY(-1px);
+    }
+  </style>
+
+  <!-- CSS do painel ARGOS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <!-- Página pública / landing -->
+  <div id="mainPage" class="page active">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand fw-bold" href="#">ARGOS</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="#"
+                onclick="showPage('loginPage'); return false;"
+                >Login</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-    <!-- Página pública / landing -->
-    <div id="mainPage" class="page active">
-        <nav class="navbar navbar-expand-lg navbar-dark">
-            <div class="container">
-                <a class="navbar-brand fw-bold" href="#">ARGOS</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" href="#" onclick="showPage('loginPage'); return false;">Login</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+    <div
+      id="carouselMain"
+      class="carousel slide"
+      data-bs-ride="carousel"
+    >
+      <div class="carousel-indicators">
+        <button
+          type="button"
+          data-bs-target="#carouselMain"
+          data-bs-slide-to="0"
+          class="active"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#carouselMain"
+          data-bs-slide-to="1"
+        ></button>
+        <button
+          type="button"
+          data-bs-target="#carouselMain"
+          data-bs-slide-to="2"
+        ></button>
+      </div>
 
-        <div id="carouselMain" class="carousel slide" data-bs-ride="carousel">
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselMain" data-bs-slide-to="0" class="active"></button>
-                <button type="button" data-bs-target="#carouselMain" data-bs-slide-to="1"></button>
-                <button type="button" data-bs-target="#carouselMain" data-bs-slide-to="2"></button>
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <div
+            class="d-flex align-items-center justify-content-center h-100"
+          >
+            <div class="carousel-caption">
+              <h1 class="display-4 fw-bold">
+                ARGOS – Monitoramento de Incidentes
+              </h1>
+              <p class="lead">
+                Simule múltiplas emergências, viaturas e rotas de
+                atendimento em um único painel.
+              </p>
             </div>
-            
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <div class="d-flex align-items-center justify-content-center h-100">
-                        <div class="carousel-caption">
-                            <h1 class="display-4 fw-bold">ARGOS – Monitoramento de Incidentes</h1>
-                            <p class="lead">Simule múltiplas emergências, viaturas e rotas de atendimento em um único painel.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="carousel-item">
-                    <div class="d-flex align-items-center justify-content-center h-100">
-                        <div class="carousel-caption">
-                            <h1 class="display-4 fw-bold">Rotas Otimizadas</h1>
-                            <p class="lead">Use o Google Maps para calcular e visualizar rotas de atendimento.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="carousel-item">
-                    <div class="d-flex align-items-center justify-content-center h-100">
-                        <div class="carousel-caption">
-                            <h1 class="display-4 fw-bold">Painel Unificado</h1>
-                            <p class="lead">Acompanhe incidentes, viaturas e câmera em tempo real em um só lugar.</p>
-                        </div>
-                    </div>
-                </div>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <div
+            class="d-flex align-items-center justify-content-center h-100"
+          >
+            <div class="carousel-caption">
+              <h1 class="display-4 fw-bold">Rotas Otimizadas</h1>
+              <p class="lead">
+                Use o Google Maps para calcular e visualizar rotas de
+                atendimento.
+              </p>
             </div>
-            
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselMain" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon"></span>
+          </div>
+        </div>
+
+        <div class="carousel-item">
+          <div
+            class="d-flex align-items-center justify-content-center h-100"
+          >
+            <div class="carousel-caption">
+              <h1 class="display-4 fw-bold">Painel Unificado</h1>
+              <p class="lead">
+                Acompanhe incidentes, viaturas e câmera em tempo real em
+                um só lugar.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button
+        class="carousel-control-prev"
+        type="button"
+        data-bs-target="#carouselMain"
+        data-bs-slide="prev"
+      >
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button
+        class="carousel-control-next"
+        type="button"
+        data-bs-target="#carouselMain"
+        data-bs-slide="next"
+      >
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+
+    <section id="about" class="py-5 bg-light">
+      <div class="container">
+        <h2 class="section-title text-center">
+          Como o ARGOS ajuda?
+        </h2>
+        <div class="row">
+          <div class="col-lg-6 mb-4">
+            <div class="card info-card h-100">
+              <div class="card-header">
+                <h5 class="mb-0">📍 Incidentes georreferenciados</h5>
+              </div>
+              <div class="card-body">
+                <p>
+                  Visualize diferentes tipos de ocorrências (acidente,
+                  incêndio, assalto etc.) diretamente no mapa da cidade.
+                </p>
+                <p class="mb-0">
+                  Cada incidente pode ser selecionado para focar o mapa e
+                  planejar o despacho de viaturas.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 mb-4">
+            <div class="card info-card h-100">
+              <div class="card-header">
+                <h5 class="mb-0">🚑 Despacho de viaturas</h5>
+              </div>
+              <div class="card-body">
+                <p>
+                  Simule o envio de múltiplas viaturas a partir de
+                  diferentes bases operacionais.
+                </p>
+                <p class="mb-0">
+                  Rotas são calculadas automaticamente usando o Google
+                  Maps Directions API.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-center">
+      <div class="container">
+        <p class="mb-0">
+          © 2024 ARGOS – Protótipo Multi-Emergências
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Página de Login -->
+  <div id="loginPage" class="page">
+    <div class="auth-container">
+      <div class="auth-card">
+        <div class="auth-header">
+          <h2>🔐 Acesso ao Painel ARGOS</h2>
+          <p class="mb-0">
+            Informe suas credenciais para entrar
+          </p>
+        </div>
+        <div class="auth-body">
+          <div id="loginAlert"></div>
+          <form id="loginForm">
+            <div class="mb-3">
+              <label for="loginEmail" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="loginEmail"
+                placeholder="operador@argos.com"
+                required
+              />
+            </div>
+            <div class="mb-3">
+              <label for="loginPassword" class="form-label">Senha</label>
+              <input
+                type="password"
+                class="form-control"
+                id="loginPassword"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+            <button
+              type="submit"
+              class="btn btn-auth btn-primary w-100 mb-3"
+            >
+              Entrar
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselMain" data-bs-slide="next">
-                <span class="carousel-control-next-icon"></span>
-            </button>
+          </form>
+          <div class="text-center mt-3">
+            <a
+              href="#"
+              class="auth-link"
+              onclick="showPage('mainPage'); return false;"
+              >Voltar para a página inicial</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Página do painel ARGOS -->
+  <div id="appPage" class="page">
+    <div id="app">
+      <aside id="sidebar">
+        <div class="sidebar-header">
+          <h1>ARGOS — Incidentes</h1>
+          <button
+            id="logoutBtn"
+            type="button"
+            onclick="logout()"
+          >
+            Sair
+          </button>
         </div>
 
-        <section id="about" class="py-5 bg-light">
-            <div class="container">
-                <h2 class="section-title text-center">Como o ARGOS ajuda?</h2>
-                <div class="row">
-                    <div class="col-lg-6 mb-4">
-                        <div class="card info-card h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0">📍 Incidentes georreferenciados</h5>
-                            </div>
-                            <div class="card-body">
-                                <p>Visualize diferentes tipos de ocorrências (acidente, incêndio, assalto etc.) diretamente no mapa da cidade.</p>
-                                <p class="mb-0">Cada incidente pode ser selecionado para focar o mapa e planejar o despacho de viaturas.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 mb-4">
-                        <div class="card info-card h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0">🚑 Despacho de viaturas</h5>
-                            </div>
-                            <div class="card-body">
-                                <p>Simule o envio de múltiplas viaturas a partir de diferentes bases operacionais.</p>
-                                <p class="mb-0">Rotas são calculadas automaticamente usando o Google Maps Directions API.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div id="incidentsList" class="list"></div>
 
-        <footer class="text-center">
-            <div class="container">
-                <p class="mb-0">© 2024 ARGOS – Protótipo Multi-Emergências</p>
-            </div>
-        </footer>
-    </div>
+        <div class="controls">
+          <label>Viaturas a despachar:</label>
+          <select id="selectCount">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
 
-    <!-- Página de Login (sem cadastro) -->
-    <div id="loginPage" class="page">
-        <div class="auth-container">
-            <div class="auth-card">
-                <div class="auth-header">
-                    <h2>🔐 Acesso ao Painel ARGOS</h2>
-                    <p class="mb-0">Informe suas credenciais para entrar</p>
-                </div>
-                <div class="auth-body">
-                    <div id="loginAlert"></div>
-                    <form id="loginForm">
-                        <div class="mb-3">
-                            <label for="loginEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="loginEmail" placeholder="operador@argos.com" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="loginPassword" class="form-label">Senha</label>
-                            <input type="password" class="form-control" id="loginPassword" placeholder="••••••••" required>
-                        </div>
-                        <button type="submit" class="btn btn-auth btn-primary w-100 mb-3">Entrar</button>
-                    </form>
-                    <div class="text-center mt-3">
-                        <a href="#" class="auth-link" onclick="showPage('mainPage'); return false;">Voltar para a página inicial</a>
-                    </div>
-                </div>
-            </div>
+          <button id="dispatchBtn">Despachar</button>
+          <button id="resetBtn" class="secondary">Resetar</button>
         </div>
-    </div>
 
-    <!-- Página do painel ARGOS (conteúdo original do protótipo) -->
-    <div id="appPage" class="page">
-        <div id="app">
-            <aside id="sidebar">
-              <div class="sidebar-header">
-                <h1>ARGOS — Incidentes</h1>
-                <button id="logoutBtn" type="button" onclick="logout()">Sair</button>
-              </div>
-              <div id="incidentsList" class="list"></div>
+        <h2 id="vehiclesTitle">Viaturas (sempre visíveis)</h2>
+        <div id="vehiclesList" class="list small"></div>
+      </aside>
 
-              <div class="controls">
-                <label>Viaturas a despachar:</label>
-                <select id="selectCount">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3" selected>3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                </select>
+      <main id="main">
+        <div id="map"></div>
 
-                <button id="dispatchBtn">Despachar</button>
-                <button id="resetBtn" class="secondary">Resetar</button>
-              </div>
-
-              <h2>Viaturas (sempre visíveis)</h2>
-              <div id="vehiclesList" class="list small"></div>
-            </aside>
-
-            <main id="main">
-              <div id="map"></div>
-              <div id="cameraPanel" class="camera">
-                <video id="camPreview" src="video.mp4" autoplay loop muted></video>
-              </div>
-            </main>
+        <!-- Painel de câmera (escondido via CSS, só deixei a marcação) -->
+        <div id="cameraPanel" class="camera">
+          <video
+            id="camPreview"
+            src="video.mp4"
+            autoplay
+            loop
+            muted
+          ></video>
         </div>
+      </main>
     </div>
+  </div>
 
-    <!-- JS do Bootstrap -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  <!-- JS do Bootstrap -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 
-    <!-- JS do protótipo ARGOS -->
-    <script src="script.js"></script>
-    <!-- Substitua YOUR_API_KEY pela sua chave do Google Maps (com Directions + Geometry) -->
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxeJ_-Jb3T3oB1_tyrWvbFxcNyLuDkjy4&libraries=geometry&callback=initMap"></script>
+  <!-- JS do painel ARGOS -->
+  <script src="script.js"></script>
 
-    <!-- Lógica de navegação e login (conta fixa via /api/login) -->
-    <script>
-        let currentUser = null;
+  <!-- Google Maps (substitua YOUR_API_KEY pela sua chave) -->
+  <script
+    async
+    defer
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=geometry&callback=initMap"
+  ></script>
 
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            const el = document.getElementById(pageId);
-            if (el) {
-                el.classList.add('active');
-            }
-        }
+  <!-- Lógica de navegação + login -->
+  <script>
+    let currentUser = null;
 
-        function showAlert(elementId, message, type) {
-            const alertDiv = document.getElementById(elementId);
-            if (!alertDiv) return;
-            alertDiv.innerHTML = `
-                <div class="alert alert-${type} alert-custom alert-dismissible fade show" role="alert">
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-        }
+    function showPage(pageId) {
+      document
+        .querySelectorAll(".page")
+        .forEach((page) => page.classList.remove("active"));
+      const el = document.getElementById(pageId);
+      if (el) el.classList.add("active");
+    }
 
-        async function performLogin(email, password) {
-            try {
-                const response = await fetch('/api/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
+    function showAlert(elementId, message, type) {
+      const alertDiv = document.getElementById(elementId);
+      if (!alertDiv) return;
+      alertDiv.innerHTML = `
+        <div class="alert alert-${type} alert-custom alert-dismissible fade show" role="alert">
+          ${message}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      `;
+    }
 
-                if (!response.ok) {
-                    throw new Error('Credenciais inválidas');
-                }
-
-                const data = await response.json();
-
-                currentUser = data.user || { name: 'Operador ARGOS', email };
-                const token = data.token || 'fixed-token';
-
-                localStorage.setItem('argosToken', token);
-                localStorage.setItem('argosUserName', currentUser.name);
-                localStorage.setItem('argosUserEmail', currentUser.email);
-
-                return true;
-            } catch (err) {
-                console.error(err);
-                throw err;
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('argosToken');
-            localStorage.removeItem('argosUserName');
-            localStorage.removeItem('argosUserEmail');
-            showPage('mainPage');
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // Se já estiver logado (token salvo), vai direto para o painel
-            const token = localStorage.getItem('argosToken');
-            if (token) {
-                currentUser = {
-                    name: localStorage.getItem('argosUserName') || 'Operador ARGOS',
-                    email: localStorage.getItem('argosUserEmail') || 'operador@argos.com'
-                };
-                showPage('appPage');
-            } else {
-                showPage('mainPage');
-            }
-
-            const loginForm = document.getElementById('loginForm');
-            if (loginForm) {
-                loginForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const email = document.getElementById('loginEmail').value;
-                    const password = document.getElementById('loginPassword').value;
-
-                    try {
-                        await performLogin(email, password);
-                        showAlert('loginAlert', 'Login realizado com sucesso! Redirecionando...', 'success');
-                        setTimeout(() => {
-                            showPage('appPage');
-                        }, 1000);
-                    } catch (err) {
-                        showAlert('loginAlert', 'Email ou senha inválidos, ou erro de conexão com o backend.', 'danger');
-                    }
-                });
-            }
+    async function performLogin(email, password) {
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
         });
-    </script>
+
+        if (!response.ok) {
+          throw new Error("Credenciais inválidas");
+        }
+
+        const data = await response.json();
+
+        currentUser = data.user || { name: "Operador ARGOS", email };
+        const token = data.token || "fixed-token";
+
+        localStorage.setItem("argosToken", token);
+        localStorage.setItem("argosUserName", currentUser.name);
+        localStorage.setItem("argosUserEmail", currentUser.email);
+
+        return true;
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
+    }
+
+    function logout() {
+      currentUser = null;
+      localStorage.removeItem("argosToken");
+      localStorage.removeItem("argosUserName");
+      localStorage.removeItem("argosUserEmail");
+      showPage("mainPage");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const token = localStorage.getItem("argosToken");
+      if (token) {
+        currentUser = {
+          name:
+            localStorage.getItem("argosUserName") || "Operador ARGOS",
+          email:
+            localStorage.getItem("argosUserEmail") ||
+            "operador@argos.com",
+        };
+        showPage("appPage");
+      } else {
+        showPage("mainPage");
+      }
+
+      const loginForm = document.getElementById("loginForm");
+      if (loginForm) {
+        loginForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const email =
+            document.getElementById("loginEmail").value.trim();
+          const password =
+            document.getElementById("loginPassword").value;
+
+          try {
+            await performLogin(email, password);
+            showAlert(
+              "loginAlert",
+              "Login realizado com sucesso! Redirecionando...",
+              "success"
+            );
+            setTimeout(() => {
+              showPage("appPage");
+            }, 1000);
+          } catch (err) {
+            showAlert(
+              "loginAlert",
+              "Email ou senha inválidos, ou erro de conexão com o backend.",
+              "danger"
+            );
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>

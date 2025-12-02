@@ -1,26 +1,178 @@
-:root{
-  --bg:#0f1724; --panel:#0b1220; --accent:#1fb6ff; --danger:#ff6b6b; --muted:#94a3b8;
+/* Layout geral do painel ARGOS */
+html,
+body {
+  height: 100%;
 }
-*{box-sizing:border-box}
-body{margin:0;font-family:Inter,system-ui,Arial;background:linear-gradient(180deg,#071022,#0b1730);color:#e6eef8}
-#app{display:grid;grid-template-columns:320px 1fr;height:100vh;gap:12px;padding:12px}
-#sidebar{background:var(--panel);border-radius:12px;padding:16px;overflow:auto;border:1px solid rgba(255,255,255,0.03)}
-#sidebar h1{margin:0 0 12px 0;font-size:18px;color:var(--accent)}
-.list{display:flex;flex-direction:column;gap:8px}
-.incident-card, .vehicle-card{background:rgba(255,255,255,0.03);padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.02)}
-.incident-card.selected{outline:3px solid rgba(31,182,255,0.14);box-shadow:0 6px 20px rgba(2,6,23,0.6)}
-.incident-title{font-weight:700}
-.small{font-size:13px;color:var(--muted)}
-.controls{margin-top:12px;display:flex;flex-direction:column;gap:8px}
-.controls select, .controls button{padding:8px;border-radius:8px;border:0}
-.controls button{background:var(--accent);color:#001;cursor:pointer;font-weight:700}
-.controls .secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
 
-#main{position:relative;border-radius:12px;overflow:hidden}
-#map{width:100%;height:100%;min-height:600px;border-radius:12px}
-.camera{position:absolute;right:18px;top:18px;width:360px;background:rgba(2,6,23,0.6);padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03)}
-.camera video{width:100%;border-radius:6px;display:block}
-.camOverlay{margin-top:8px;font-size:13px;color:var(--muted);text-align:center;cursor:pointer}
-.info-bubble{background:rgba(0,0,0,0.7);padding:6px 10px;border-radius:6px;color:#fff;font-size:13px}
+#appPage {
+  height: 100vh;
+}
 
-`Note:` This prototype uses Google Maps JS API (Directions). Replace YOUR_API_KEY in index.html with your key.
+#app {
+  display: flex;
+  height: 100%;
+  background: #0b1020;
+  color: #e5ecff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#sidebar {
+  width: 340px;
+  background: #050814;
+  padding: 16px 18px 18px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+#sidebar h1 {
+  font-size: 20px;
+  margin: 0;
+  color: #e5ecff;
+}
+
+#sidebar h2 {
+  font-size: 16px;
+  margin: 12px 0 4px;
+}
+
+.list {
+  background: #050814;
+  padding: 8px 0;
+  border-radius: 12px;
+  overflow-y: auto;
+  max-height: 260px;
+}
+
+/* cards de incidentes e viaturas */
+.incident-card,
+.vehicle-card {
+  background: #121729;
+  border-radius: 12px;
+  padding: 8px 10px;
+  margin: 4px 0;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.incident-card:hover,
+.vehicle-card:hover {
+  background: #1f2740;
+  transform: translateY(-1px);
+}
+
+.incident-card.selected {
+  background: #243b72;
+  box-shadow: 0 0 0 1px #4c8dff;
+}
+
+.incident-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.small {
+  font-size: 11px;
+  color: #9ea8d6;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.controls label {
+  font-size: 13px;
+  color: #c4cff8;
+}
+
+.controls select {
+  background: #121729;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e5ecff;
+  padding: 4px 8px;
+  font-size: 13px;
+}
+
+.controls button {
+  margin-top: 4px;
+  border-radius: 999px;
+  border: none;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease,
+    box-shadow 0.15s ease;
+}
+
+#dispatchBtn {
+  background: linear-gradient(135deg, #37b26c, #1d9b57);
+  color: #ffffff;
+}
+
+#dispatchBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+}
+
+#resetBtn.secondary {
+  background: #1b2238;
+  color: #e5ecff;
+}
+
+#resetBtn.secondary:hover {
+  background: #222a44;
+}
+
+/* main com mapa + câmera */
+#main {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+#map {
+  flex: 1;
+}
+
+/* painel de câmera – vai ficar oculto */
+.camera {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  width: 420px;
+  height: 230px;
+  border-radius: 16px;
+  background: rgba(16, 32, 48, 0.92);
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.camera video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ==== ajustes pedidos ==== */
+
+/* 1) Esconder título + lista de viaturas, mas manter no JS */
+#vehiclesTitle,
+#vehiclesList {
+  display: none;
+}
+
+/* 2) Esconder o quadrado da câmera */
+#cameraPanel {
+  display: none;
+}
