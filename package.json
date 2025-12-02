@@ -1,0 +1,13 @@
+{
+  "name": "argos-vercel",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo \"No build step\"",
+    "start": "echo \"Use vercel dev para rodar localmente\""
+  },
+  "dependencies": {
+    "pg": "^8.12.0"
+  }
+}
