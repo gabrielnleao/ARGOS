@@ -84,7 +84,7 @@ let incidents = [];
 let vehicles = [];
 let selectedIncident = null;
 
-// Referências do modal
+// Modal refs
 const incidentModalEl = document.getElementById("incidentModal");
 const incidentModalCloseBtn = document.getElementById("incidentModalClose");
 const modalIncidentTitleEl = document.getElementById("modalIncidentTitle");
@@ -94,6 +94,11 @@ const modalIncidentLocationEl = document.getElementById(
 );
 const modalVehiclesListEl = document.getElementById("modalVehiclesList");
 const modalCamEl = document.getElementById("modalCam");
+const modalVehicleCountEl = document.getElementById("modalVehicleCount");
+const modalDispatchBtnEl = document.getElementById("modalDispatchBtn");
+
+// Lista das viaturas mais próximas do incidente atual (mostradas no popup)
+let modalNearestVehicles = [];
 
 // -------------------------
 // Helpers
@@ -204,7 +209,6 @@ function buildIncidents() {
       marker,
       cameraUrl: it.cameraUrl,
       selected: false,
-      polylines: [],
     });
   });
 }
@@ -280,7 +284,7 @@ function selectIncident(id) {
 }
 
 // -------------------------
-// Focar viatura (caso clique na lista, se um dia reexibir)
+// Focar viatura (se usar clique na lista algum dia)
 // -------------------------
 function focusVehicle(id) {
   const v = vehicles.find((veh) => veh.id === id);
@@ -290,18 +294,16 @@ function focusVehicle(id) {
 }
 
 // -------------------------
-// Despacho de viatura (via popup)
+// Despacho de viatura (função base)
 // -------------------------
-function dispatchVehicleToIncident(vehicleId, incidentId) {
-  const veh = vehicles.find((v) => v.id === vehicleId);
-  const incident = incidents.find((i) => i.id === incidentId);
-  if (!veh || !incident) return;
+function dispatchVehicleToIncident(vehicle, incident) {
+  if (!vehicle || !incident) return;
 
   // Limpa rota/animação anterior da viatura
-  clearVehicleRoute(veh);
+  clearVehicleRoute(vehicle);
 
   const request = {
-    origin: veh.pos,
+    origin: vehicle.pos,
     destination: incident.pos,
     travelMode: google.maps.TravelMode.DRIVING,
   };
@@ -319,27 +321,43 @@ function dispatchVehicleToIncident(vehicleId, incidentId) {
         strokeWeight: 5,
       });
 
-      veh.routePolyline = polyline;
+      vehicle.routePolyline = polyline;
 
       // Anima a viatura ao longo do path
       let step = 0;
       const totalSteps = path.length;
 
-      veh.routeAnimation = setInterval(() => {
+      vehicle.routeAnimation = setInterval(() => {
         if (step >= totalSteps) {
-          clearInterval(veh.routeAnimation);
-          veh.routeAnimation = null;
+          clearInterval(vehicle.routeAnimation);
+          vehicle.routeAnimation = null;
           return;
         }
 
         const point = path[step];
-        veh.marker.setPosition(point);
-        veh.pos = { lat: point.lat(), lng: point.lng() };
+        vehicle.marker.setPosition(point);
+        vehicle.pos = { lat: point.lat(), lng: point.lng() };
 
         step++;
       }, 80); // velocidade da animação (ms por ponto)
     } else {
       console.error("Erro ao calcular rota:", status);
+    }
+  });
+}
+
+// Despachar múltiplas viaturas (N escolhidas no popup)
+function dispatchSelectedCountForCurrentIncident() {
+  if (!selectedIncident || modalNearestVehicles.length === 0) return;
+
+  const count = parseInt(modalVehicleCountEl.value, 10) || 1;
+  const toDispatch = modalNearestVehicles.slice(0, count);
+
+  toDispatch.forEach((vehWrapper) => {
+    // vehWrapper tem as mesmas chaves de vehicle (id, name, pos, marker, etc.)
+    const vehicle = vehicles.find((v) => v.id === vehWrapper.id);
+    if (vehicle) {
+      dispatchVehicleToIncident(vehicle, selectedIncident);
     }
   });
 }
@@ -361,6 +379,12 @@ function setupModalEvents() {
         closeIncidentModal();
       }
     });
+  }
+
+  if (modalDispatchBtnEl) {
+    modalDispatchBtnEl.addEventListener("click", () =>
+      dispatchSelectedCountForCurrentIncident()
+    );
   }
 }
 
@@ -393,26 +417,29 @@ function openIncidentModal(incident) {
       });
   }
 
-  // 3 viaturas mais próximas + botão de despachar
+  // 3 viaturas mais próximas (lista + select de quantidade)
+  modalNearestVehicles = getNearestVehicles(incident.pos, 3);
+
   if (modalVehiclesListEl) {
     modalVehiclesListEl.innerHTML = "";
-    const nearest = getNearestVehicles(incident.pos, 3);
-    nearest.forEach((v) => {
+    modalNearestVehicles.forEach((v) => {
       const li = document.createElement("li");
       li.innerHTML = `<strong>${v.name}</strong><span>${formatDistance(
         v.distance
       )} até o incidente</span>`;
-
-      const btn = document.createElement("button");
-      btn.textContent = "Despachar";
-      btn.className = "modal-vehicle-btn";
-      btn.addEventListener("click", () =>
-        dispatchVehicleToIncident(v.id, incident.id)
-      );
-
-      li.appendChild(btn);
       modalVehiclesListEl.appendChild(li);
     });
+  }
+
+  if (modalVehicleCountEl) {
+    modalVehicleCountEl.innerHTML = "";
+    const max = modalNearestVehicles.length || 1;
+    for (let i = 1; i <= max; i++) {
+      const opt = document.createElement("option");
+      opt.value = String(i);
+      opt.textContent = String(i);
+      modalVehicleCountEl.appendChild(opt);
+    }
   }
 
   incidentModalEl.classList.add("open");

@@ -472,7 +472,7 @@
 
         <div id="incidentsList" class="list"></div>
 
-        <!-- Controles laterais REMOVIDOS: despacho será só no popup -->
+        <!-- Controles laterais removidos: despacho é só pelo popup -->
 
         <h2 id="vehiclesTitle">Viaturas (sempre visíveis)</h2>
         <div id="vehiclesList" class="list small"></div>
@@ -481,7 +481,7 @@
       <main id="main">
         <div id="map"></div>
 
-        <!-- Painel de câmera antigo (continuamos escondendo via CSS) -->
+        <!-- Painel de câmera antigo (escondido via CSS) -->
         <div id="cameraPanel" class="camera">
           <video
             id="camPreview"
@@ -523,6 +523,16 @@
         <div class="incident-modal-info">
           <h4>Viaturas mais próximas</h4>
           <ul id="modalVehiclesList"></ul>
+
+          <div class="incident-modal-controls">
+            <label for="modalVehicleCount">
+              Quantidade de viaturas
+            </label>
+            <select id="modalVehicleCount"></select>
+            <button id="modalDispatchBtn">
+              Despachar viaturas
+            </button>
+          </div>
         </div>
       </div>
     </div>
