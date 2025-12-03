@@ -8,7 +8,7 @@ const INCIDENTS_DATA = [
     type: "Ocorrência de gravidade média",
     pos: { lat: -8.0505, lng: -34.8925 },
     icon: "inc_acidente.png",          // ícone que você criar p/ esse tipo
-    cameraUrl: "vid_beco_crowbar.mp4" // Man Standing in a Dark Alleyway Holding a Crowbar
+    cameraUrl: "batida.jpg" // Man Standing in a Dark Alleyway Holding a Crowbar
   },
   {
     id: 2,
