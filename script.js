@@ -7,8 +7,8 @@ const INCIDENTS_DATA = [
     title: "Batida de Carro em Avenida",
     type: "Ocorrência de gravidade média",
     pos: { lat: -8.0505, lng: -34.8925 },
-    icon: "inc_acidente.png",          // ícone que você criar p/ esse tipo
-    cameraUrl: "batida.png" // Man Standing in a Dark Alleyway Holding a Crowbar
+    icon: "inc_acidente.png",          // ícone do incidente
+    cameraUrl: "batida.png"            // IMAGEM da câmera para esse incidente
   },
   {
     id: 2,
@@ -16,15 +16,15 @@ const INCIDENTS_DATA = [
     type: "Ocorrência de gravidade alta",
     pos: { lat: -8.045, lng: -34.885 },
     icon: "inc_assalto.png",
-    cameraUrl: "vid_briga_residencial.mp4" // Two Boys Fighting on the Ground
+    cameraUrl: "assalto.png"           // coloque a imagem correspondente
   },
   {
     id: 3,
-    title: "Incendio em área comercial",
+    title: "Incêndio em área comercial",
     type: "Ocorrência de gravidade alta com chances de ser proposital",
     pos: { lat: -8.06, lng: -34.89 },
     icon: "inc_incendio.png",
-    cameraUrl: "vid_planejamento_roubo.mp4" // Robbers Looking at a Map while Planning their Next Robber
+    cameraUrl: "incendio.png"
   },
   {
     id: 4,
@@ -32,7 +32,7 @@ const INCIDENTS_DATA = [
     type: "Ocorrência de alta gravidade e risco policial",
     pos: { lat: -8.0435, lng: -34.878 },
     icon: "inc_resgate.png",
-    cameraUrl: "vid_discussao_rua.mp4" // Couple Arguing in the Street
+    cameraUrl: "resgate.png"
   },
   {
     id: 5,
@@ -40,7 +40,7 @@ const INCIDENTS_DATA = [
     type: "Ocorrência de gravidade baixa",
     pos: { lat: -8.055, lng: -34.9 },
     icon: "inc_congestionamento.png",
-    cameraUrl: "vid_suspeito_andando_noite.mp4" // Man Walking in the Dark ou Hoodie Walking
+    cameraUrl: "congestionamento.png"
   }
 ];
 
@@ -94,7 +94,7 @@ const modalIncidentLocationEl = document.getElementById(
   "modalIncidentLocation"
 );
 const modalVehiclesListEl = document.getElementById("modalVehiclesList");
-const modalCamEl = document.getElementById("modalCam");
+const modalCameraImageEl = document.getElementById("modalCameraImage");
 const modalVehicleCountEl = document.getElementById("modalVehicleCount");
 const modalDispatchBtnEl = document.getElementById("modalDispatchBtn");
 
@@ -361,7 +361,7 @@ function dispatchSelectedCountForCurrentIncident() {
     }
   });
 
-  // <<< AQUI É A MUDANÇA: fecha o popup depois de despachar >>>
+  // fecha o popup depois de despachar
   closeIncidentModal();
 }
 
@@ -410,14 +410,10 @@ function openIncidentModal(incident) {
     )}, ${incident.pos.lng.toFixed(4)}`;
   }
 
-  // Camera
-  if (modalCamEl) {
-    modalCamEl.src = incident.cameraUrl || "video.mp4";
-    modalCamEl
-      .play()
-      .catch(() => {
-        /* ignore */
-      });
+  // Imagem da câmera
+  if (modalCameraImageEl) {
+    modalCameraImageEl.src = incident.cameraUrl || "placeholder_camera.png";
+    modalCameraImageEl.alt = incident.title || "Imagem da câmera";
   }
 
   // 3 viaturas mais próximas (lista + select de quantidade)
